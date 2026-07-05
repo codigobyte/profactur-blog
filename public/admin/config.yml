@@ -1,0 +1,109 @@
+# Decap CMS — configuración del content hub de ProFactur.
+#
+# ⚠️ Las `options` de category son la ÚNICA copia permitida del enum de
+# categorías (Decap lee YAML, no puede importar TS). La fuente de verdad es
+# CATEGORIES en src/content.config.ts — si cambiás algo allá, actualizá acá.
+
+backend:
+  name: github
+  repo: codigobyte/profactur-blog
+  branch: main
+  base_url: https://profactur-oauth.codigobyte.workers.dev
+
+# public_folder CON el base path — las imágenes se sirven bajo /blog.
+media_folder: public/images/blog
+public_folder: /blog/images/blog
+
+site_url: https://profactur.com/blog
+display_url: https://profactur.com/blog
+
+locale: es
+
+collections:
+  - name: blog
+    label: Blog
+    label_singular: Artículo
+    folder: src/content/blog
+    create: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    fields:
+      - { label: 'Título', name: title, widget: string }
+      - {
+          label: 'Descripción',
+          name: description,
+          widget: text,
+          hint: 'Bajada corta. Aparece en el listado y como meta description (140-160 caracteres recomendado).',
+        }
+      - {
+          label: 'Fecha de publicación',
+          name: publishedAt,
+          widget: datetime,
+          format: 'YYYY-MM-DD',
+          date_format: 'DD/MM/YYYY',
+          time_format: false,
+        }
+      - {
+          label: 'Fecha de actualización',
+          name: updatedAt,
+          widget: datetime,
+          format: 'YYYY-MM-DD',
+          date_format: 'DD/MM/YYYY',
+          time_format: false,
+          required: false,
+        }
+      - {
+          label: 'Categoría',
+          name: category,
+          widget: select,
+          options:
+            [
+              'Facturación electrónica',
+              'ARCA / AFIP',
+              'Monotributo',
+              'Guías de uso ProFactur',
+              'Comparativas',
+              'Integraciones y API',
+              'Actualidad fiscal Argentina',
+            ],
+        }
+      - {
+          label: 'Tags',
+          name: tags,
+          widget: list,
+          default: [],
+          required: false,
+          hint: 'Tags opcionales separados por coma.',
+        }
+      - { label: 'Autor', name: author, widget: string, default: 'Martín Aquino' }
+      - {
+          label: 'Video de YouTube',
+          name: video_youtube,
+          widget: string,
+          required: false,
+          hint: 'URL completa del video (youtube.com/watch?v=… o youtu.be/…). Se embebe arriba del artículo con lazy-load.',
+        }
+      - label: 'Preguntas frecuentes'
+        name: faqs
+        widget: list
+        required: false
+        hint: 'Se renderizan al final del artículo con schema FAQPage (lo que más citan las IAs).'
+        fields:
+          - { label: 'Pregunta', name: q, widget: string }
+          - { label: 'Respuesta', name: a, widget: text }
+      - label: 'Imagen de portada'
+        name: cover
+        widget: object
+        required: false
+        fields:
+          - { label: 'Archivo', name: src, widget: image }
+          - { label: 'Texto alternativo', name: alt, widget: string }
+      - {
+          label: 'Borrador',
+          name: draft,
+          widget: boolean,
+          default: false,
+          hint: 'Si está activado, el artículo no aparece en el sitio.',
+        }
+      - { label: 'Contenido', name: body, widget: markdown }

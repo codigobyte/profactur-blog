@@ -1,0 +1,26 @@
+---
+// Decap CMS — página standalone para servir la UI en /blog/admin.
+//
+// NO usa BaseLayout ni global.css: Decap monta su propia app en el <body>
+// y cualquier CSS/JS del sitio interferiría con su runtime.
+//
+// Versión PINEADA (COD-230 #10): nada de rangos ^3.x flotantes desde unpkg.
+// Para actualizar Decap: cambiar la versión acá a propósito y probar /admin.
+//
+// El <link rel="cms-config-url"> ancla el config al path absoluto con base,
+// necesario con trailingSlash: 'never'.
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>CMS | Blog ProFactur</title>
+    <link href="/blog/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <script is:inline src="https://unpkg.com/decap-cms@3.14.1/dist/decap-cms.js"></script>
+  </body>
+</html>
