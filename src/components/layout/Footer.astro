@@ -1,0 +1,44 @@
+---
+import { SITE_ORIGIN, SITE_URL, blogPath, whatsappUrl } from '@/lib/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-20 border-t border-[var(--c-line)] py-10">
+  <div
+    class="mx-auto flex max-w-[1100px] flex-col items-center justify-between gap-6 px-5 sm:flex-row"
+  >
+    <p class="m-0 text-[0.85rem]" style="color: var(--c-muted);">
+      © {year} ProFactur · un producto de
+      <a
+        href="https://codigobyte.com.ar"
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-text);">Codigobyte</a
+      >
+    </p>
+    <nav aria-label="Footer" class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.85rem]">
+      <a
+        href={SITE_ORIGIN}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">ProFactur</a
+      >
+      <a
+        href={blogPath()}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">Blog</a
+      >
+      <a
+        href={`${SITE_URL}/feed.xml`}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">RSS</a
+      >
+      <a
+        href={whatsappUrl('Hola, vengo del blog de ProFactur.')}
+        target="_blank"
+        rel="noopener"
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">WhatsApp</a
+      >
+    </nav>
+  </div>
+</footer>

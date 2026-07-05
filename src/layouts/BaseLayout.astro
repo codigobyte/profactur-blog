@@ -1,0 +1,111 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { SITE_NAME, SITE_ORIGIN, SITE_URL, blogPath } from '@/lib/site';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical = new URL(Astro.url.pathname, SITE_ORIGIN).href,
+  ogImage = `${SITE_ORIGIN}/images/og-profactur.png`,
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
+// Organization global — mismo @id que usa el marketing de Laravel para que
+// los crawlers unifiquen la entidad.
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${SITE_ORIGIN}/#organization`,
+  name: 'Codigobyte',
+  url: SITE_ORIGIN,
+  logo: `${SITE_ORIGIN}/images/logo.png`,
+};
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0a0a0f" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content={canonical} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* Assets propios del blog — autocontenido, sin depender de los que
+        sirve Laravel en la raíz del dominio. */}
+    <link rel="icon" href={blogPath('/images/ico.png')} type="image/png" />
+    <link rel="apple-touch-icon" href={blogPath('/images/ico.png')} />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`Blog | ${SITE_NAME}`}
+      href={`${SITE_URL}/feed.xml`}
+    />
+
+    <link
+      rel="preload"
+      href={blogPath('/fonts/Inter-latin.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
+
+    {/* Dark mode ANTES del primer paint — misma key/semántica que el marketing
+        de Laravel (localStorage.darkMode !== 'false' → oscuro, default dark).
+        Al compartir origen, la preferencia se comparte con el resto del sitio. */}
+    <script is:inline>
+      document.documentElement.classList.toggle(
+        'dark',
+        localStorage.getItem('darkMode') !== 'false'
+      );
+    </script>
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-to-content" href="#main">Saltar al contenido</a>
+    <div class="brand-bg" aria-hidden="true"></div>
+
+    <Header />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

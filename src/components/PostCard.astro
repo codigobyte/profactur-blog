@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { categoryByLabel } from '@/content.config';
+import { blogPath, dateFormatter, readingMinutes } from '@/lib/site';
+
+export interface Props {
+  post: CollectionEntry<'blog'>;
+  /** h2 en listados principales, h3 en "seguir leyendo". */
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel: Heading = 'h2' } = Astro.props;
+const cat = categoryByLabel(post.data.category);
+const fechaISO = post.data.publishedAt.toISOString().slice(0, 10);
+const minutes = readingMinutes(post.body);
+---
+
+<article class="card flex h-full flex-col gap-4 p-6">
+  <div class="flex items-center justify-between gap-3">
+    <a href={blogPath(`/categoria/${cat.slug}`)} class:list={['cat-badge no-underline', cat.badge]}>
+      {cat.label}
+    </a>
+    <time datetime={fechaISO} class="text-[0.75rem] uppercase tracking-wider" style="color: var(--c-muted);">
+      {dateFormatter.format(post.data.publishedAt)}
+    </time>
+  </div>
+
+  <Heading class="m-0 text-[1.2rem] leading-snug font-bold tracking-tight">
+    <a
+      href={blogPath(`/${post.id}`)}
+      class="no-underline transition-colors hover:text-[var(--color-primary-light)]"
+      style="color: var(--c-text);"
+    >
+      {post.data.title}
+    </a>
+  </Heading>
+
+  <p class="m-0 flex-1 text-[0.92rem] leading-relaxed" style="color: var(--c-muted);">
+    {post.data.description}
+  </p>
+
+  <div
+    class="mt-auto flex items-center justify-between border-t border-[var(--c-line)] pt-3 text-[0.75rem] uppercase tracking-wider"
+    style="color: var(--c-muted);"
+  >
+    <span>{post.data.author}</span>
+    <span>{minutes} min</span>
+  </div>
+</article>

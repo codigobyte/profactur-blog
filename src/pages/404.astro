@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE_ORIGIN, blogPath } from '@/lib/site';
+---
+
+<BaseLayout
+  title="Página no encontrada | Blog ProFactur"
+  description="La página que buscás no existe o fue movida."
+  noindex
+>
+  <section class="mx-auto max-w-[640px] px-5 py-28 text-center">
+    <p class="gradient-text m-0 text-[4rem] font-extrabold leading-none">404</p>
+    <h1 class="mt-4 text-[1.6rem] font-extrabold tracking-tight">
+      Esta página no existe (o ya no).
+    </h1>
+    <p class="mt-3 text-[1rem] leading-relaxed" style="color: var(--c-muted);">
+      Puede que el artículo se haya movido o que el link esté mal escrito.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a href={blogPath()} class="btn btn-primary">Ir al blog</a>
+      <a href={SITE_ORIGIN} class="btn btn-ghost">Ir a ProFactur</a>
+    </div>
+  </section>
+</BaseLayout>

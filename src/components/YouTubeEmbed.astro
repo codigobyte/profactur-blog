@@ -1,0 +1,77 @@
+---
+/**
+ * Embed de YouTube con patrón facade: hasta el click solo se carga la
+ * miniatura (i.ytimg.com); el iframe (youtube-nocookie) recién se inyecta
+ * al interactuar. Cero JS de YouTube en el load inicial.
+ */
+export interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+
+function extractId(raw: string): string | null {
+  const m = raw.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/
+  );
+  return m?.[1] ?? null;
+}
+
+const videoId = extractId(url);
+---
+
+{
+  videoId && (
+    <div
+      class="yt-facade card relative my-10 aspect-video cursor-pointer overflow-hidden !rounded-[16px] p-0"
+      data-yt-id={videoId}
+      data-yt-title={title}
+      role="button"
+      tabindex="0"
+      aria-label={`Reproducir video: ${title}`}
+    >
+      <img
+        src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
+        alt={`Miniatura del video: ${title}`}
+        loading="lazy"
+        decoding="async"
+        width="480"
+        height="360"
+        class="h-full w-full object-cover"
+      />
+      <span
+        aria-hidden="true"
+        class="absolute inset-0 grid place-items-center bg-black/30 transition-colors hover:bg-black/20"
+      >
+        <span class="btn btn-primary !rounded-full !px-6 !py-3.5 text-[1rem]">▶ Ver video</span>
+      </span>
+    </div>
+  )
+}
+
+<script>
+  function activate(el: HTMLElement): void {
+    const id = el.dataset.ytId;
+    if (!id) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+    iframe.title = el.dataset.ytTitle ?? 'Video de YouTube';
+    iframe.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.className = 'absolute inset-0 h-full w-full border-0';
+    el.replaceChildren(iframe);
+    el.classList.remove('cursor-pointer');
+  }
+
+  document.querySelectorAll<HTMLElement>('.yt-facade').forEach((el) => {
+    el.addEventListener('click', () => activate(el));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate(el);
+      }
+    });
+  });
+</script>

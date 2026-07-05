@@ -1,0 +1,46 @@
+{
+  "name": "profactur-blog",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Content hub de ProFactur — blog estático servido en profactur.com/blog.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "postbuild": "pagefind --site dist/blog --output-path dist/blog/pagefind",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint \"src/**/*.{js,ts,astro}\"",
+    "lint:fix": "eslint --fix \"src/**/*.{js,ts,astro}\"",
+    "format": "prettier --write \"**/*.{ts,js,astro,css,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,astro,css,md,json}\""
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.18",
+    "@astrojs/sitemap": "3.7.2",
+    "@tailwindcss/vite": "4.3.0",
+    "astro": "5.18.1",
+    "astro-compress": "2.4.1",
+    "astro-og-canvas": "0.13.0",
+    "rehype-slug": "6.0.0",
+    "tailwindcss": "4.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "@eslint/js": "10.0.1",
+    "@typescript-eslint/eslint-plugin": "8.59.3",
+    "@typescript-eslint/parser": "8.59.3",
+    "eslint": "10.3.0",
+    "eslint-plugin-astro": "1.7.0",
+    "pagefind": "1.5.2",
+    "prettier": "3.8.3",
+    "prettier-plugin-astro": "0.14.1",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "overrides": {
+    "vite": "^7.3.2"
+  }
+}

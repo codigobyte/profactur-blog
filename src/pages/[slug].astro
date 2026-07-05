@@ -1,0 +1,227 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import TOC from '@/components/TOC.astro';
+import FAQBlock from '@/components/FAQBlock.astro';
+import YouTubeEmbed from '@/components/YouTubeEmbed.astro';
+import { categoryByLabel } from '@/content.config';
+import {
+  AUTHOR_WORKS_FOR,
+  PUBLISHER,
+  SITE_NAME,
+  SITE_ORIGIN,
+  SITE_URL,
+  blogPath,
+  dateFormatter,
+  readingMinutes,
+  whatsappUrl,
+} from '@/lib/site';
+
+type Post = CollectionEntry<'blog'>;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('blog', (e: Post) => !e.data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, todas: entries },
+  }));
+}
+
+const { entry, todas } = Astro.props as { entry: Post; todas: Post[] };
+const { Content, headings } = await render(entry);
+
+const cat = categoryByLabel(entry.data.category);
+const fechaPubISO = entry.data.publishedAt.toISOString();
+const fechaModISO = entry.data.updatedAt?.toISOString();
+const minutes = readingMinutes(entry.body);
+const wordCount = entry.body?.split(/\s+/).filter(Boolean).length ?? 0;
+const showToc = wordCount > 800;
+
+// Relacionados: misma categoría primero, completar con recientes.
+const otras = todas
+  .filter((a) => a.id !== entry.id)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const relacionados = [
+  ...otras.filter((a) => a.data.category === entry.data.category),
+  ...otras.filter((a) => a.data.category !== entry.data.category),
+].slice(0, 3);
+
+const canonical = `${SITE_URL}/${entry.id}`;
+const ogImage = `${SITE_URL}/og/${entry.id}.png`;
+const title = `${entry.data.title} | Blog ${SITE_NAME}`;
+
+const waHref = whatsappUrl(
+  `Hola, leí "${entry.data.title}" en el blog de ProFactur y tengo una consulta.`
+);
+
+// Article — autor Person con worksFor (COD-230 fix #5: la organización nunca
+// va como Person).
+const articleSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: fechaPubISO,
+  author: {
+    '@type': 'Person',
+    name: entry.data.author,
+    worksFor: {
+      '@type': 'Organization',
+      name: AUTHOR_WORKS_FOR.name,
+      url: AUTHOR_WORKS_FOR.url,
+    },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: PUBLISHER.name,
+    url: PUBLISHER.url,
+    logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/images/logo.png` },
+  },
+  image: ogImage,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  articleSection: entry.data.category,
+  inLanguage: 'es-AR',
+};
+if (fechaModISO) articleSchema.dateModified = fechaModISO;
+if (entry.data.tags.length > 0) articleSchema.keywords = entry.data.tags.join(', ');
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ProFactur', item: SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: SITE_URL },
+    { '@type': 'ListItem', position: 3, name: entry.data.title, item: canonical },
+  ],
+};
+---
+
+<BaseLayout
+  title={title}
+  description={entry.data.description}
+  canonical={canonical}
+  ogImage={ogImage}
+  ogType="article"
+>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(articleSchema)} />
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <article class="mx-auto max-w-[760px] px-5 pt-14 pb-16 md:pt-16">
+    <header>
+      <nav aria-label="Migas" class="mb-6 text-[0.75rem] uppercase tracking-widest" style="color: var(--c-muted);">
+        <a href={SITE_ORIGIN} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">ProFactur</a>
+        <span aria-hidden="true" class="mx-2 opacity-50">/</span>
+        <a href={blogPath()} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">Blog</a>
+        <span aria-hidden="true" class="mx-2 opacity-50">/</span>
+        <span aria-current="page" style="color: var(--c-text);">{entry.data.title}</span>
+      </nav>
+
+      <a href={blogPath(`/categoria/${cat.slug}`)} class:list={['cat-badge mb-5 no-underline', cat.badge]}>
+        {cat.label}
+      </a>
+
+      <h1
+        class="m-0 font-extrabold tracking-tight"
+        style="font-size: clamp(1.9rem, 5vw, 2.8rem); line-height: 1.15; letter-spacing: -0.02em;"
+      >
+        {entry.data.title}
+      </h1>
+
+      <p class="mt-4 text-[1.1rem] leading-relaxed" style="color: var(--c-muted);">
+        {entry.data.description}
+      </p>
+
+      <dl
+        class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[var(--c-line)] pt-5 text-[0.78rem] uppercase tracking-wider"
+        style="color: var(--c-muted);"
+      >
+        <div>
+          <dt class="sr-only">Autor</dt>
+          <dd class="m-0">{entry.data.author}</dd>
+        </div>
+        <div>
+          <dt class="sr-only">Publicado</dt>
+          <dd class="m-0">
+            <time datetime={fechaPubISO}>{dateFormatter.format(entry.data.publishedAt)}</time>
+          </dd>
+        </div>
+        {
+          entry.data.updatedAt && (
+            <div>
+              <dt class="sr-only">Actualizado</dt>
+              <dd class="m-0">
+                Actualizado <time datetime={fechaModISO}>{dateFormatter.format(entry.data.updatedAt)}</time>
+              </dd>
+            </div>
+          )
+        }
+        <div>
+          <dt class="sr-only">Lectura estimada</dt>
+          <dd class="m-0">{minutes} min de lectura</dd>
+        </div>
+      </dl>
+    </header>
+
+    {
+      entry.data.video_youtube && (
+        <YouTubeEmbed url={entry.data.video_youtube} title={entry.data.title} />
+      )
+    }
+
+    <div class="mt-10" data-pagefind-body>
+      {showToc && <TOC headings={headings} />}
+
+      <div class="prose-blog">
+        <Content />
+      </div>
+
+      <FAQBlock faqs={entry.data.faqs} />
+    </div>
+  </article>
+
+  <!-- CTA contextual -->
+  <section class="mx-auto max-w-[760px] px-5 pb-16" aria-labelledby="cta-heading">
+    <div class="card !rounded-[20px] p-8 text-center md:p-10" style="backdrop-filter: none; background: var(--c-card-solid);">
+      <h2 id="cta-heading" class="m-0 text-[1.5rem] font-extrabold tracking-tight">
+        ¿Facturás con <span class="gradient-text">ProFactur</span>?
+      </h2>
+      <p class="mx-auto mt-3 max-w-[440px] text-[0.98rem] leading-relaxed" style="color: var(--c-muted);">
+        Emití comprobantes ARCA en segundos, sin errores y sin planillas. Probalo gratis o
+        escribinos si te quedaron dudas del artículo.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <a href={`${SITE_ORIGIN}/register`} class="btn btn-primary">Probar ProFactur gratis</a>
+        <a href={waHref} target="_blank" rel="noopener" class="btn btn-ghost">
+          Consultar por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {
+    relacionados.length > 0 && (
+      <section class="mx-auto max-w-[1100px] px-5 pb-20" aria-labelledby="related-heading">
+        <div class="mb-8 flex items-end justify-between gap-4">
+          <h2 id="related-heading" class="m-0 text-[1.5rem] font-extrabold tracking-tight">
+            Seguir leyendo
+          </h2>
+          <a
+            href={blogPath()}
+            class="text-[0.85rem] font-medium no-underline transition-colors hover:text-[var(--color-primary)]"
+            style="color: var(--c-muted);"
+          >
+            Ver todos →
+          </a>
+        </div>
+        <ul class="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3">
+          {relacionados.map((post) => (
+            <li>
+              <PostCard post={post} headingLevel="h3" />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>

@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { CATEGORIES, categoryByLabel } from '@/content.config';
+import { SITE_ORIGIN, SITE_URL, blogPath } from '@/lib/site';
+
+const title = 'Blog | ProFactur — Facturación electrónica sin vueltas';
+const description =
+  'Guías de facturación electrónica, ARCA, monotributo y actualidad fiscal argentina. Escritas en claro, para que factures sin errores.';
+
+const posts = (await getCollection('blog', (e) => !e.data.draft)).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+
+// Pills solo de categorías con contenido — sin páginas de categoría vacías.
+const activeCategories = CATEGORIES.filter((c) =>
+  posts.some((p) => categoryByLabel(p.data.category).slug === c.slug)
+);
+
+const hayPosts = posts.length > 0;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ProFactur', item: SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: SITE_URL },
+  ],
+};
+
+const blogSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Blog de ProFactur',
+  description,
+  url: SITE_URL,
+  inLanguage: 'es-AR',
+  publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(blogSchema)} />
+  {/* OJO: el slot tiene que ir en el <Fragment>, no en los elementos internos
+      — con slot en los hijos de un fragment anónimo Astro los descarta
+      (bug heredado de tiempolisto, donde el buscador nunca se montó). */}
+  {
+    hayPosts && (
+      <Fragment slot="head">
+        <link rel="stylesheet" href={blogPath('/pagefind/pagefind-ui.css')} />
+        <script is:inline src={blogPath('/pagefind/pagefind-ui.js')} defer />
+      </Fragment>
+    )
+  }
+
+  <section class="mx-auto max-w-[1100px] px-5 pt-16 pb-10 md:pt-20">
+    <nav aria-label="Migas" class="mb-5 text-[0.75rem] uppercase tracking-widest" style="color: var(--c-muted);">
+      <a href={SITE_ORIGIN} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">ProFactur</a>
+      <span aria-hidden="true" class="mx-2 opacity-50">/</span>
+      <span aria-current="page">Blog</span>
+    </nav>
+
+    <h1
+      class="m-0 font-extrabold tracking-tight"
+      style="font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -0.02em;"
+    >
+      Facturá sin errores.<br />
+      <span class="gradient-text">Entendé lo que firmás.</span>
+    </h1>
+    <p class="mt-5 max-w-[620px] text-[1.05rem] leading-relaxed" style="color: var(--c-muted);">
+      Facturación electrónica, ARCA, monotributo y actualidad fiscal argentina explicadas en
+      claro. Sin jerga contable, con ejemplos reales.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-[1100px] px-5 pb-20" aria-label="Artículos">
+    {
+      hayPosts ? (
+        <>
+          <div class="mb-8">
+            <div id="blog-search" class="pagefind-host" />
+          </div>
+
+          <nav aria-label="Categorías" class="mb-10">
+            <ul class="m-0 flex list-none flex-wrap items-center gap-2 p-0">
+              <li>
+                <a href={blogPath()} class="filter-pill" aria-current="page">
+                  Todas
+                </a>
+              </li>
+              {activeCategories.map((cat) => (
+                <li>
+                  <a href={blogPath(`/categoria/${cat.slug}`)} class="filter-pill">
+                    {cat.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <ul class="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <li>
+                <PostCard post={post} />
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <div class="mx-auto max-w-[560px] py-14 text-center">
+          <p class="text-[1.3rem] font-semibold">Estamos preparando contenido. Volvé pronto.</p>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<script>
+  // Pagefind UI — el script defer del head puede no estar listo al ejecutar
+  // este módulo; reintento corto hasta que el constructor exista.
+  interface PagefindUIOptions {
+    element: string;
+    showSubResults?: boolean;
+    translations?: Record<string, string>;
+  }
+  type PagefindUICtor = new (opts: PagefindUIOptions) => unknown;
+
+  function initPagefind(attempt = 0): void {
+    const container = document.getElementById('blog-search');
+    if (!container || container.dataset.ready === 'true') return;
+
+    const Ctor = (window as unknown as { PagefindUI?: PagefindUICtor }).PagefindUI;
+    if (!Ctor) {
+      if (attempt < 50) window.setTimeout(() => initPagefind(attempt + 1), 100);
+      return;
+    }
+
+    container.dataset.ready = 'true';
+    new Ctor({
+      element: '#blog-search',
+      showSubResults: true,
+      translations: {
+        placeholder: 'Buscar en el blog…',
+        clear_search: 'Limpiar',
+        load_more: 'Cargar más resultados',
+        search_label: 'Buscar en el blog',
+        zero_results: 'No encontramos resultados para [SEARCH_TERM]',
+        many_results: '[COUNT] resultados para [SEARCH_TERM]',
+        one_result: '[COUNT] resultado para [SEARCH_TERM]',
+        searching: 'Buscando…',
+      },
+    });
+  }
+
+  initPagefind();
+</script>
