@@ -1,0 +1,55 @@
+name: Deploy blog to VPS
+
+on:
+  push:
+    branches: [main]
+
+# Serializa deploys: si llega un push mientras corre uno (p. ej. commits de
+# Decap encadenados), el nuevo espera en lugar de cancelar — un rsync a
+# medias dejaría el blog inconsistente.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # `build` corre astro check + astro build; npm ejecuta `postbuild`
+      # (pagefind) automáticamente después.
+      - name: Build
+        run: npm run build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      # El build queda en dist/blog (outDir) — se sincroniza a la carpeta
+      # homónima del VPS. --delete limpia archivos huérfanos de deploys
+      # anteriores, acotado a dist/blog/.
+      - name: Rsync to VPS
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            dist/blog/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/profactur-blog/dist/blog/"
