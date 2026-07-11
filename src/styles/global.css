@@ -1,51 +1,66 @@
 @import 'tailwindcss';
 
 /* ============================================================
-   Design tokens ProFactur — fuente: profactur/docs/design-tokens.md
+   Design tokens ProFactur — design system nuevo (fusión COD-243),
+   fuente: profactur/resources/css/marketing.css. Tema CLARO ÚNICO,
+   igual que el chrome marketing (light-only desde COD-243).
+
+   Mapeo de nombres (se conservan los nombres viejos para no tocar
+   cada componente; los VALORES son los del sistema nuevo):
+     --color-primary        → --brand      #1F6AE1
+     --color-primary-light  → --brand-deep #0756B2 (hover: en claro se
+                              oscurece, ya no se aclara como en dark)
+     --color-primary-dark   → --brand-deep #0756B2
+     --color-accent         → --brand-sky  #38B6FE (detalle fino)
    ============================================================ */
 @theme {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, ui-sans-serif, sans-serif;
+  --font-sans:
+    'Instrument Sans', 'Inter', -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    sans-serif;
 
-  --color-primary: #6366f1;
-  --color-primary-light: #818cf8;
-  --color-primary-dark: #4f46e5;
-  --color-accent: #22d3ee;
-  --color-accent-2: #a855f7;
+  --color-primary: oklch(0.551 0.195 259.9); /* #1F6AE1 */
+  --color-primary-light: oklch(0.468 0.162 257.1); /* #0756B2 */
+  --color-primary-dark: oklch(0.468 0.162 257.1); /* #0756B2 */
+  --color-accent: oklch(0.74 0.149 239.2); /* #38B6FE */
+  --color-brand-soft: oklch(0.958 0.018 252); /* fondo badges/tints */
+  --color-brand-border: oklch(0.885 0.045 252); /* bordes con tinte de marca */
 }
 
-/* Tokens semánticos con par light/dark — el flip lo hace la clase `dark`
-   en <html> (mismo mecanismo y misma key de localStorage que el marketing
-   de Laravel: `darkMode`, default oscuro). */
+/* Tokens semánticos — mismos valores que --background/--foreground/
+   --muted-foreground/--border/--secondary del marketing.css de COD-243.
+   Sin par dark: el design system nuevo es claro único. */
 :root {
-  --c-bg: #fafafa;
-  --c-text: #18181b;
-  --c-muted: #71717a;
-  --c-card: rgba(255, 255, 255, 0.7);
+  --c-bg: oklch(0.985 0.002 90);
+  --c-text: oklch(0.12 0.01 60);
+  --c-muted: oklch(0.45 0.02 60);
+  --c-card: rgba(255, 255, 255, 0.85);
   --c-card-solid: #ffffff;
-  --c-line: rgba(99, 102, 241, 0.12);
-  --c-code-bg: rgba(99, 102, 241, 0.08);
+  --c-line: oklch(0.88 0.01 90);
+  --c-code-bg: oklch(0.96 0.005 90);
+  --shadow-premium-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-premium: 0 4px 12px rgba(0, 0, 0, 0.05), 0 12px 32px rgba(0, 0, 0, 0.06);
 }
 
-.dark {
-  --c-bg: #0a0a0f;
-  --c-text: #fafafa;
-  --c-muted: #a1a1aa;
-  --c-card: rgba(15, 15, 25, 0.7);
-  --c-card-solid: #12121a;
-  --c-line: rgba(99, 102, 241, 0.2);
-  --c-code-bg: rgba(99, 102, 241, 0.15);
+/* Instrument Sans variable self-hosted — misma fuente y mismo WOFF2 que el
+   chrome marketing de COD-243 (resources/fonts/ del repo profactur). */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/blog/fonts/InstrumentSans-Variable.woff2') format('woff2');
 }
 
-/* Inter Variable self-hosted (mejora sobre el bunny.net del marketing). */
+/* Inter Variable self-hosted — queda como fallback. */
 @font-face {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
   src: url('/blog/fonts/Inter-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
@@ -53,9 +68,10 @@
   font-weight: 100 900;
   font-display: swap;
   src: url('/blog/fonts/Inter-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
-    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
-    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Inter';
@@ -74,10 +90,9 @@ body {
   background: var(--c-bg);
   color: var(--c-text);
   line-height: 1.6;
-  transition:
-    background 0.5s ease,
-    color 0.5s ease;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -91,30 +106,29 @@ body {
 }
 
 /* ============================================================
-   Fondo hero de marca (radiales indigo/cyan/purple, versión sutil)
+   Fondo — el design system nuevo no usa blobs radiales: base clara
+   plana + grano de ruido sutil (mismo SVG que .noise-overlay del
+   marketing.css de COD-243).
    ============================================================ */
 .brand-bg {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(34, 211, 238, 0.07), transparent),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(168, 85, 247, 0.07), transparent);
-}
-.dark .brand-bg {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.25), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(34, 211, 238, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(168, 85, 247, 0.12), transparent);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
 }
 
+/* Antes: gradiente indigo→cyan con background-clip. El design system nuevo
+   marca las palabras acento con itálica del font display + color de marca
+   (.word-accent del chrome). Se conserva el nombre de clase para no tocar
+   cada uso en los templates. */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
 }
 
 /* ============================================================
@@ -134,53 +148,64 @@ body {
   left: 0;
 }
 
+/* Botones — pills como el chrome nuevo: primario azul de marca plano
+   (hover a brand-deep, active con micro-scale), secundario outline. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
   font-size: 0.9rem;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.15s ease;
   cursor: pointer;
   border: none;
 }
+.btn:active {
+  transform: scale(0.985);
+}
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  box-shadow: var(--shadow-premium-sm);
 }
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+  background: var(--color-primary-dark);
 }
 .btn-ghost {
   background: transparent;
   color: var(--c-text);
-  border: 1px solid var(--c-line);
+  border: 1px solid color-mix(in oklab, var(--c-text) 30%, transparent);
 }
 .btn-ghost:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: color-mix(in oklab, var(--c-text) 60%, transparent);
+  background: color-mix(in oklab, var(--c-text) 5%, transparent);
+  color: var(--c-text);
 }
 
+/* Cards — superficie blanca sólida con borde y sombra premium sutil,
+   hover-lift como el chrome (sin glow indigo ni glassmorphism). */
 .card {
-  background: var(--c-card);
-  backdrop-filter: blur(20px);
+  background: var(--c-card-solid);
   border: 1px solid var(--c-line);
-  border-radius: 16px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-premium-sm);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease,
     border-color 0.3s ease;
 }
 .card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+  transform: translateY(-3px);
+  border-color: var(--color-brand-border);
+  box-shadow: var(--shadow-premium);
 }
 
 /* Chips de categoría — mapeados desde CATEGORIES en content.config.ts. */
@@ -195,39 +220,35 @@ body {
   padding: 0.4rem 0.7rem;
   border-radius: 100px;
 }
+/* Tintes desaturados legibles sobre claro (criterio COD-245: distinción
+   por matiz sin volver a paletas neón; texto en tono 700 de cada hue). */
 .cat-indigo {
-  background: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
+  background: var(--color-brand-soft);
+  color: var(--color-primary-dark);
 }
 .cat-cyan {
-  background: rgba(34, 211, 238, 0.12);
-  color: #06b6d4;
+  background: rgba(34, 211, 238, 0.1);
+  color: #0e7490;
 }
 .cat-amber {
-  background: rgba(245, 158, 11, 0.14);
-  color: #d97706;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
 }
 .cat-purple {
-  background: rgba(168, 85, 247, 0.12);
-  color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+  color: #7e22ce;
 }
 .cat-emerald {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
 }
 .cat-zinc {
-  background: rgba(113, 113, 122, 0.15);
+  background: rgba(113, 113, 122, 0.12);
   color: var(--c-muted);
 }
 .cat-rose {
-  background: rgba(244, 63, 94, 0.12);
-  color: #fb7185;
-}
-.dark .cat-amber {
-  color: #fbbf24;
-}
-.dark .cat-cyan {
-  color: #22d3ee;
+  background: rgba(244, 63, 94, 0.1);
+  color: #be123c;
 }
 
 .filter-pill {
@@ -251,7 +272,7 @@ body {
   color: var(--color-primary);
 }
 .filter-pill[aria-current='page'] {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: var(--color-primary);
   border-color: transparent;
   color: #fff;
 }
@@ -286,13 +307,13 @@ body {
   margin: 0 0 1.25em;
 }
 .prose-blog a {
-  color: var(--color-primary-light);
+  color: var(--color-primary);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
 .prose-blog a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary-dark);
 }
 .prose-blog strong {
   font-weight: 700;

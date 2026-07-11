@@ -38,9 +38,12 @@ const organizationSchema = {
 <html lang="es-AR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="theme-color" content="#fafaf9" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -62,8 +65,10 @@ const organizationSchema = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    {/* Assets propios del blog — autocontenido, sin depender de los que
-        sirve Laravel en la raíz del dominio. */}
+    {
+      /* Assets propios del blog — autocontenido, sin depender de los que
+        sirve Laravel en la raíz del dominio. */
+    }
     <link rel="icon" href={blogPath('/images/ico.png')} type="image/png" />
     <link rel="apple-touch-icon" href={blogPath('/images/ico.png')} />
 
@@ -76,24 +81,23 @@ const organizationSchema = {
 
     <link
       rel="preload"
-      href={blogPath('/fonts/Inter-latin.woff2')}
+      href={blogPath('/fonts/InstrumentSans-Variable.woff2')}
       as="font"
       type="font/woff2"
       crossorigin
     />
 
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(organizationSchema)}
+    />
 
-    {/* Dark mode ANTES del primer paint — misma key/semántica que el marketing
-        de Laravel (localStorage.darkMode !== 'false' → oscuro, default dark).
-        Al compartir origen, la preferencia se comparte con el resto del sitio. */}
-    <script is:inline>
-      document.documentElement.classList.toggle(
-        'dark',
-        localStorage.getItem('darkMode') !== 'false'
-      );
-    </script>
-
+    {
+      /* Light-only desde el re-skin al design system de COD-243: el chrome
+        marketing de Laravel ya no tiene modo dark ni toggle, y el blog lo
+        acompaña. El localStorage 'darkMode' legado se ignora. */
+    }
     <slot name="head" />
   </head>
   <body>

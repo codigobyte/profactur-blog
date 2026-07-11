@@ -1,5 +1,16 @@
 ---
 import { SITE_ORIGIN, blogPath } from '@/lib/site';
+
+// Mismos destinos que el nav del chrome marketing (COD-243) — el blog es un
+// sitio Astro aparte pero tiene que sentirse el mismo producto. Los anchors
+// de sección de la home (Beneficios/Funciones/FAQ) no se replican acá para
+// mantener el header del blog compacto.
+const navLinks = [
+  { label: 'Inicio', href: SITE_ORIGIN },
+  { label: 'Aplicaciones', href: `${SITE_ORIGIN}/aplicaciones` },
+  { label: 'Precios', href: `${SITE_ORIGIN}/precios` },
+  { label: 'Docs', href: `${SITE_ORIGIN}/docs` },
+];
 ---
 
 <header
@@ -7,7 +18,11 @@ import { SITE_ORIGIN, blogPath } from '@/lib/site';
   style="background: var(--c-card);"
 >
   <div class="mx-auto flex max-w-[1100px] items-center justify-between gap-4 px-5 py-3.5">
-    <a href={blogPath()} class="flex items-center gap-2.5 no-underline" aria-label="Blog de ProFactur">
+    <a
+      href={blogPath()}
+      class="flex items-center gap-2.5 no-underline"
+      aria-label="Blog de ProFactur"
+    >
       {/* El logo ya contiene el wordmark ProFactur — solo sumamos "Blog". */}
       <img
         src={blogPath('/images/logo.png')}
@@ -15,79 +30,34 @@ import { SITE_ORIGIN, blogPath } from '@/lib/site';
         width="140"
         height="32"
         class="h-8 w-auto"
-        style="filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.4));"
       />
-      <span class="gradient-text text-[1.05rem]" style="font-weight: 800;">Blog</span>
+      <span class="gradient-text text-[1.15rem]">Blog</span>
     </a>
 
-    <nav aria-label="Principal" class="flex items-center gap-2 sm:gap-4">
+    <nav aria-label="Principal" class="flex items-center gap-2 sm:gap-5">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="hidden text-[0.9rem] no-underline transition-colors hover:text-[var(--c-text)] md:inline"
+            style="color: color-mix(in oklab, var(--c-text) 70%, transparent);"
+          >
+            {link.label}
+          </a>
+        ))
+      }
       <a
-        href={blogPath()}
-        class="hidden text-[0.9rem] font-medium no-underline transition-colors hover:text-[var(--color-primary)] sm:inline"
-        style="color: var(--c-text);"
+        href={`${SITE_ORIGIN}/login`}
+        class="btn btn-ghost hidden !px-4 !py-2 text-[0.85rem] sm:inline-flex"
       >
-        Artículos
+        Iniciar sesión
       </a>
       <a
-        href={SITE_ORIGIN}
-        class="hidden text-[0.9rem] font-medium no-underline transition-colors hover:text-[var(--color-primary)] sm:inline"
-        style="color: var(--c-muted);"
+        href={`${SITE_ORIGIN}/registro`}
+        class="btn btn-primary !px-4 !py-2 text-[0.85rem]"
       >
-        Ir a ProFactur →
-      </a>
-      <a href={`${SITE_ORIGIN}/register`} class="btn btn-primary !px-4 !py-2 text-[0.85rem]">
         Probar gratis
       </a>
-      <button
-        id="theme-toggle"
-        type="button"
-        class="grid h-9 w-9 cursor-pointer place-items-center rounded-full border border-[var(--c-line)] bg-transparent transition-colors hover:border-[var(--color-primary)]"
-        aria-label="Cambiar tema claro/oscuro"
-      >
-        {/* Sol (visible en dark) / Luna (visible en light) */}
-        <svg
-          class="hidden h-4 w-4 dark-visible"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4"></circle>
-          <path
-            d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-          ></path>
-        </svg>
-        <svg
-          class="h-4 w-4 light-visible"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path>
-        </svg>
-      </button>
     </nav>
   </div>
 </header>
-
-<style>
-  :global(.dark) .dark-visible {
-    display: block;
-  }
-  :global(.dark) .light-visible {
-    display: none;
-  }
-</style>
-
-<script>
-  document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('darkMode', String(isDark));
-  });
-</script>
