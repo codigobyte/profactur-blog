@@ -52,7 +52,7 @@ const ogImage = `${SITE_URL}/og/${entry.id}.png`;
 const title = `${entry.data.title} | Blog ${SITE_NAME}`;
 
 const waHref = whatsappUrl(
-  `Hola, leí "${entry.data.title}" en el blog de ProFactur y tengo una consulta.`
+  `Hola, leí "${entry.data.title}" en el blog de ProFactur y tengo una consulta.`,
 );
 
 // Article — autor Person con worksFor (COD-230 fix #5: la organización nunca
@@ -104,26 +104,52 @@ const breadcrumbSchema = {
   ogImage={ogImage}
   ogType="article"
 >
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(articleSchema)} />
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(articleSchema)}
+  />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
 
   <article class="mx-auto max-w-[760px] px-5 pt-14 pb-16 md:pt-16">
     <header>
-      <nav aria-label="Migas" class="mb-6 text-[0.75rem] uppercase tracking-widest" style="color: var(--c-muted);">
-        <a href={SITE_ORIGIN} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">ProFactur</a>
+      <nav
+        aria-label="Migas"
+        class="mb-6 text-[0.75rem] uppercase tracking-widest"
+        style="color: var(--c-muted);"
+      >
+        <a
+          href={SITE_ORIGIN}
+          class="no-underline transition-colors hover:text-[var(--color-primary)]"
+          style="color: var(--c-muted);">ProFactur</a
+        >
         <span aria-hidden="true" class="mx-2 opacity-50">/</span>
-        <a href={blogPath()} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">Blog</a>
+        <a
+          href={blogPath()}
+          class="no-underline transition-colors hover:text-[var(--color-primary)]"
+          style="color: var(--c-muted);">Blog</a
+        >
         <span aria-hidden="true" class="mx-2 opacity-50">/</span>
         <span aria-current="page" style="color: var(--c-text);">{entry.data.title}</span>
       </nav>
 
-      <a href={blogPath(`/categoria/${cat.slug}`)} class:list={['cat-badge mb-5 no-underline', cat.badge]}>
+      <a
+        href={blogPath(`/categoria/${cat.slug}`)}
+        class:list={['cat-badge mb-5 no-underline', cat.badge]}
+      >
         {cat.label}
       </a>
 
+      {/* Escala .type-h2 del design system (peso 550, tracking -0.025em). */}
       <h1
-        class="m-0 font-extrabold tracking-tight"
-        style="font-size: clamp(1.9rem, 5vw, 2.8rem); line-height: 1.15; letter-spacing: -0.02em;"
+        class="m-0"
+        style="font-size: clamp(1.875rem, 1rem + 3vw, 3rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 550;"
       >
         {entry.data.title}
       </h1>
@@ -143,7 +169,9 @@ const breadcrumbSchema = {
         <div>
           <dt class="sr-only">Publicado</dt>
           <dd class="m-0">
-            <time datetime={fechaPubISO}>{dateFormatter.format(entry.data.publishedAt)}</time>
+            <time datetime={fechaPubISO}
+              >{dateFormatter.format(entry.data.publishedAt)}</time
+            >
           </dd>
         </div>
         {
@@ -151,7 +179,10 @@ const breadcrumbSchema = {
             <div>
               <dt class="sr-only">Actualizado</dt>
               <dd class="m-0">
-                Actualizado <time datetime={fechaModISO}>{dateFormatter.format(entry.data.updatedAt)}</time>
+                Actualizado{' '}
+                <time datetime={fechaModISO}>
+                  {dateFormatter.format(entry.data.updatedAt)}
+                </time>
               </dd>
             </div>
           )
@@ -182,16 +213,24 @@ const breadcrumbSchema = {
 
   <!-- CTA contextual -->
   <section class="mx-auto max-w-[760px] px-5 pb-16" aria-labelledby="cta-heading">
-    <div class="card !rounded-[20px] p-8 text-center md:p-10" style="backdrop-filter: none; background: var(--c-card-solid);">
+    <div
+      class="card !rounded-[20px] p-8 text-center md:p-10"
+      style="backdrop-filter: none; background: var(--c-card-solid);"
+    >
       <h2 id="cta-heading" class="m-0 text-[1.5rem] font-extrabold tracking-tight">
         ¿Facturás con <span class="gradient-text">ProFactur</span>?
       </h2>
-      <p class="mx-auto mt-3 max-w-[440px] text-[0.98rem] leading-relaxed" style="color: var(--c-muted);">
+      <p
+        class="mx-auto mt-3 max-w-[440px] text-[0.98rem] leading-relaxed"
+        style="color: var(--c-muted);"
+      >
         Emití comprobantes ARCA en segundos, sin errores y sin planillas. Probalo gratis o
         escribinos si te quedaron dudas del artículo.
       </p>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-        <a href={`${SITE_ORIGIN}/register`} class="btn btn-primary">Probar ProFactur gratis</a>
+        <a href={`${SITE_ORIGIN}/register`} class="btn btn-primary"
+          >Probar ProFactur gratis</a
+        >
         <a href={waHref} target="_blank" rel="noopener" class="btn btn-ghost">
           Consultar por WhatsApp
         </a>
@@ -201,9 +240,15 @@ const breadcrumbSchema = {
 
   {
     relacionados.length > 0 && (
-      <section class="mx-auto max-w-[1100px] px-5 pb-20" aria-labelledby="related-heading">
+      <section
+        class="mx-auto max-w-[1100px] px-5 pb-20"
+        aria-labelledby="related-heading"
+      >
         <div class="mb-8 flex items-end justify-between gap-4">
-          <h2 id="related-heading" class="m-0 text-[1.5rem] font-extrabold tracking-tight">
+          <h2
+            id="related-heading"
+            class="m-0 text-[1.5rem] font-extrabold tracking-tight"
+          >
             Seguir leyendo
           </h2>
           <a

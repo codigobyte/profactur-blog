@@ -10,12 +10,12 @@ const description =
   'Guías de facturación electrónica, ARCA, monotributo y actualidad fiscal argentina. Escritas en claro, para que factures sin errores.';
 
 const posts = (await getCollection('blog', (e) => !e.data.draft)).sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
 // Pills solo de categorías con contenido — sin páginas de categoría vacías.
 const activeCategories = CATEGORIES.filter((c) =>
-  posts.some((p) => categoryByLabel(p.data.category).slug === c.slug)
+  posts.some((p) => categoryByLabel(p.data.category).slug === c.slug),
 );
 
 const hayPosts = posts.length > 0;
@@ -41,11 +41,23 @@ const blogSchema = {
 ---
 
 <BaseLayout title={title} description={description}>
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(blogSchema)} />
-  {/* OJO: el slot tiene que ir en el <Fragment>, no en los elementos internos
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(blogSchema)}
+  />
+  {
+    /* OJO: el slot tiene que ir en el <Fragment>, no en los elementos internos
       — con slot en los hijos de un fragment anónimo Astro los descarta
-      (bug heredado de tiempolisto, donde el buscador nunca se montó). */}
+      (bug heredado de tiempolisto, donde el buscador nunca se montó). */
+  }
   {
     hayPosts && (
       <Fragment slot="head">
@@ -56,22 +68,38 @@ const blogSchema = {
   }
 
   <section class="mx-auto max-w-[1100px] px-5 pt-16 pb-10 md:pt-20">
-    <nav aria-label="Migas" class="mb-5 text-[0.75rem] uppercase tracking-widest" style="color: var(--c-muted);">
-      <a href={SITE_ORIGIN} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">ProFactur</a>
+    <nav
+      aria-label="Migas"
+      class="mb-5 text-[0.75rem] uppercase tracking-widest"
+      style="color: var(--c-muted);"
+    >
+      <a
+        href={SITE_ORIGIN}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">ProFactur</a
+      >
       <span aria-hidden="true" class="mx-2 opacity-50">/</span>
       <span aria-current="page">Blog</span>
     </nav>
 
+    {
+      /* Escala .type-h1 del design system: clamp fluido, peso 550 (variable),
+        tracking apretado. El acento va en itálica de marca (.gradient-text
+        redefinida como word-accent), no en gradiente. */
+    }
     <h1
-      class="m-0 font-extrabold tracking-tight"
-      style="font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -0.02em;"
+      class="m-0"
+      style="font-size: clamp(2.5rem, 1.2rem + 4vw, 4rem); line-height: 1.04; letter-spacing: -0.035em; font-weight: 550;"
     >
       Facturá sin errores.<br />
       <span class="gradient-text">Entendé lo que firmás.</span>
     </h1>
-    <p class="mt-5 max-w-[620px] text-[1.05rem] leading-relaxed" style="color: var(--c-muted);">
-      Facturación electrónica, ARCA, monotributo y actualidad fiscal argentina explicadas en
-      claro. Sin jerga contable, con ejemplos reales.
+    <p
+      class="mt-5 max-w-[620px] text-[1.05rem] leading-relaxed"
+      style="color: var(--c-muted);"
+    >
+      Facturación electrónica, ARCA, monotributo y actualidad fiscal argentina explicadas
+      en claro. Sin jerga contable, con ejemplos reales.
     </p>
   </section>
 
@@ -110,7 +138,9 @@ const blogSchema = {
         </>
       ) : (
         <div class="mx-auto max-w-[560px] py-14 text-center">
-          <p class="text-[1.3rem] font-semibold">Estamos preparando contenido. Volvé pronto.</p>
+          <p class="text-[1.3rem] font-semibold">
+            Estamos preparando contenido. Volvé pronto.
+          </p>
         </div>
       )
     }

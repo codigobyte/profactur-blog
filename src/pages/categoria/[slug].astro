@@ -11,7 +11,7 @@ import { SITE_ORIGIN, SITE_URL, blogPath } from '@/lib/site';
 export async function getStaticPaths() {
   const posts = await getCollection('blog', (e) => !e.data.draft);
   const active = CATEGORIES.filter((cat) =>
-    posts.some((p) => p.data.category === cat.label)
+    posts.some((p) => p.data.category === cat.label),
   );
   return active.map((cat) => ({
     params: { slug: cat.slug },
@@ -30,7 +30,7 @@ const { cat, posts, activeSlugs } = Astro.props as {
 };
 
 const sorted = [...posts].sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
 const title = `${cat.label} | Blog ProFactur`;
@@ -51,30 +51,55 @@ const breadcrumbSchema = {
 ---
 
 <BaseLayout title={title} description={description} canonical={canonical}>
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
 
   <section class="mx-auto max-w-[1100px] px-5 pt-16 pb-10 md:pt-20">
-    <nav aria-label="Migas" class="mb-5 text-[0.75rem] uppercase tracking-widest" style="color: var(--c-muted);">
-      <a href={SITE_ORIGIN} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">ProFactur</a>
+    <nav
+      aria-label="Migas"
+      class="mb-5 text-[0.75rem] uppercase tracking-widest"
+      style="color: var(--c-muted);"
+    >
+      <a
+        href={SITE_ORIGIN}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">ProFactur</a
+      >
       <span aria-hidden="true" class="mx-2 opacity-50">/</span>
-      <a href={blogPath()} class="no-underline transition-colors hover:text-[var(--color-primary)]" style="color: var(--c-muted);">Blog</a>
+      <a
+        href={blogPath()}
+        class="no-underline transition-colors hover:text-[var(--color-primary)]"
+        style="color: var(--c-muted);">Blog</a
+      >
       <span aria-hidden="true" class="mx-2 opacity-50">/</span>
       <span aria-current="page">{cat.label}</span>
     </nav>
 
     <span class:list={['cat-badge mb-4', cat.badge]}>{cat.label}</span>
+    {/* Escala .type-h2 del design system (peso 550). */}
     <h1
-      class="m-0 font-extrabold tracking-tight"
-      style="font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; letter-spacing: -0.02em;"
+      class="m-0"
+      style="font-size: clamp(1.875rem, 1rem + 3vw, 3rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 550;"
     >
       {cat.label}
     </h1>
-    <p class="mt-4 max-w-[620px] text-[1rem] leading-relaxed" style="color: var(--c-muted);">
-      {sorted.length} {sorted.length === 1 ? 'artículo' : 'artículos'} en esta categoría.
+    <p
+      class="mt-4 max-w-[620px] text-[1rem] leading-relaxed"
+      style="color: var(--c-muted);"
+    >
+      {sorted.length}
+      {sorted.length === 1 ? 'artículo' : 'artículos'} en esta categoría.
     </p>
   </section>
 
-  <section class="mx-auto max-w-[1100px] px-5 pb-20" aria-label={`Artículos de ${cat.label}`}>
+  <section
+    class="mx-auto max-w-[1100px] px-5 pb-20"
+    aria-label={`Artículos de ${cat.label}`}
+  >
     <nav aria-label="Categorías" class="mb-10">
       <ul class="m-0 flex list-none flex-wrap items-center gap-2 p-0">
         <li><a href={blogPath()} class="filter-pill">Todas</a></li>

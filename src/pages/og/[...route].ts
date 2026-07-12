@@ -15,15 +15,17 @@ export const { getStaticPaths, GET } = await OGImageRoute({
     title: page.title,
     description: page.description,
     logo: { path: './src/assets/logo.png', size: [96] },
+    // Paleta clara del design system (COD-243): base near-white con borde
+    // azul de marca #1F6AE1 — antes era dark indigo.
     bgGradient: [
-      [10, 10, 15],
-      [23, 23, 40],
+      [250, 250, 249],
+      [233, 239, 252],
     ],
-    border: { color: [99, 102, 241], width: 14, side: 'block-end' },
+    border: { color: [31, 106, 225], width: 14, side: 'block-end' },
     padding: 72,
     font: {
-      title: { size: 64, weight: 'ExtraBold', color: [250, 250, 250], lineHeight: 1.15 },
-      description: { size: 30, weight: 'Normal', color: [161, 161, 170], lineHeight: 1.4 },
+      title: { size: 64, weight: 'Bold', color: [24, 24, 27], lineHeight: 1.15 },
+      description: { size: 30, weight: 'Normal', color: [63, 63, 70], lineHeight: 1.4 },
     },
   }),
 });
