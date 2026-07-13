@@ -149,45 +149,52 @@ body {
 }
 
 /* Botones — pills como el chrome nuevo: primario azul de marca plano
-   (hover a brand-deep, active con micro-scale), secundario outline. */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease,
-    transform 0.15s ease;
-  cursor: pointer;
-  border: none;
-}
-.btn:active {
-  transform: scale(0.985);
-}
-.btn-primary {
-  background: var(--color-primary);
-  color: #fff;
-  box-shadow: var(--shadow-premium-sm);
-}
-.btn-primary:hover {
-  background: var(--color-primary-dark);
-}
-.btn-ghost {
-  background: transparent;
-  color: var(--c-text);
-  border: 1px solid color-mix(in oklab, var(--c-text) 30%, transparent);
-}
-.btn-ghost:hover {
-  border-color: color-mix(in oklab, var(--c-text) 60%, transparent);
-  background: color-mix(in oklab, var(--c-text) 5%, transparent);
-  color: var(--c-text);
+   (hover a brand-deep, active con micro-scale), secundario outline.
+   En @layer components a propósito: unlayered le ganaba a las utilities de
+   Tailwind (@layer utilities) y `hidden`/`sm:inline-flex` no aplicaban
+   sobre .btn — header roto en mobile. components < utilities es la
+   semántica correcta. */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.15s ease;
+    cursor: pointer;
+    border: none;
+  }
+  .btn:active {
+    transform: scale(0.985);
+  }
+  .btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-premium-sm);
+  }
+  .btn-primary:hover {
+    background: var(--color-primary-dark);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--c-text);
+    border: 1px solid color-mix(in oklab, var(--c-text) 30%, transparent);
+  }
+  .btn-ghost:hover {
+    border-color: color-mix(in oklab, var(--c-text) 60%, transparent);
+    background: color-mix(in oklab, var(--c-text) 5%, transparent);
+    color: var(--c-text);
+  }
 }
 
 /* Cards — superficie blanca sólida con borde y sombra premium sutil,
